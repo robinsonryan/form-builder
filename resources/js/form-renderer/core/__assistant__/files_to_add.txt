@@ -1,0 +1,37 @@
+Recommended additional files to add (short list and reason):
+
+1) packages/form-builder/src/Http/Controllers/FilePresignController.php
+   - Server controller that returns a presigned upload URL and a server-side key for the uploaded file.
+   - Needed so client FileUpload widget can request an upload URL before performing direct-to-storage upload.
+   - (Note: a simple local/dev implementation can return a fake uploadUrl; production should use Storage/S3 SDK.)
+
+2) packages/form-builder/routes/api.php
+   - Ensure a POST /api/form-builder/file-presign route exists and points to the controller above.
+   - (If already updated, verify route middleware and prefix.)
+
+3) packages/form-builder/resources/js/form-renderer/adapters/primevue/widgets/FileUpload.vue
+   - Vue 3 widget that:
+     * requests presign via apiClient.postFilePresign
+     * uploads the file to the returned uploadUrl (PUT/POST depending on presign)
+     * emits the resulting file reference (key, filename, content_type) via v-model
+   - Integrates with existing FieldRenderer widget wiring.
+
+4) packages/form-builder/tests/Feature/FilePresignTest.php
+   - Feature test for the presign endpoint (can return a fake uploadUrl/key).
+   - Asserts response shape contains uploadUrl and key.
+
+5) packages/form-builder/resources/js/form-renderer/core/__tests__/fileUpload.spec.js
+   - Unit test for the FileUpload widget that:
+     * Mocks apiClient.postFilePresign to return a fake uploadUrl/key
+     * Mocks fetch for the PUT upload to return ok
+     * Asserts that the widget emits the expected file reference object on success
+   - Keeps client behavior covered without requiring real S3.
+
+6) Optional: packages/form-builder/src/Services/Storage/PresignService.php
+   - Encapsulates S3 presign logic for production use; easier to test via mocking.
+
+Suggested quick commands to run after adding files:
+- php artisan test --filter FilePresignTest
+- npm run test
+
+If you'd like, I can create any or all of the above files now. Tell me which to add and I will produce exact SEARCH/REPLACE blocks for each file.

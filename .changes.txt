@@ -1,0 +1,11 @@
+Created two Pest feature tests for package console commands:
+
+- packages/form-builder/tests/Feature/PublishFormsCommandTest.php
+- packages/form-builder/tests/Feature/LintFormsCommandTest.php
+
+These run the artisan commands registered by the package service provider and assert exit code 0.
+
+Suggested commands to run locally:
+composer dump-autoload
+./vendor/bin/pest packages/form-builder/tests/Feature/PublishFormsCommandTest.php
+./vendor/bin/pest packages/form-builder/tests/Feature/LintFormsCommandTest.php

@@ -1,0 +1,34 @@
+Recommended additional files to add before finalizing step 9 (short list and reason):
+
+1) packages/form-builder/resources/js/form-renderer/core/__tests__/submit.test.js
+   - Purpose: Unit tests for useForm.submit() that mock apiClient.postJson to assert:
+     * Idempotency-Key header is provided
+     * Payload shape includes answers
+     * Success path returns submission_id and clears errors
+     * Error path stores and returns server validation errors
+   - Why: Ensures the submission flow is covered by fast unit tests and prevents regressions.
+
+2) packages/form-builder/resources/js/form-renderer/core/__tests__/validateStep.test.js
+   - Purpose: Unit tests for validateStep() that:
+     * Use real Ajv compile/validate for client-side errors
+     * Mock apiClient.postValidate for server x-rule errors
+     * Assert merging/deduplication behavior and lastErrors state
+   - Why: Verifies the important merge behavior and that UI will receive predictable errors.
+
+3) packages/form-builder/resources/js/form-renderer/core/idempotency.js (optional)
+   - Purpose: Helper to generate/persist an Idempotency-Key (localStorage with TTL or reuse)
+   - Why: Some apps prefer persistent client-side idempotency across retries; keep optional.
+
+4) packages/form-builder/resources/js/form-renderer/adapters/primevue/__tests__/FormRenderer.integration.test.js (optional)
+   - Purpose: Shallow/integration test ensuring FormRenderer uses useForm.submit(), reacts to promises,
+     and emits onSubmitSuccess/onSubmitError.
+   - Why: Catches adapter-level wiring regressions (emits, error mapping to FieldRenderer).
+
+Short recommended next steps:
+- Add the two unit tests (submit.test.js and validateStep.test.js) and run npm run test.
+- If tests pass, run the PHP feature test added earlier:
+    php artisan test --filter SubmitEndpointContractTest
+
+Notes:
+- apiClient.postJson already supports passing headers; ensure tests assert that the header is forwarded.
+- If you want, I can create the two unit test files now and provide exact SEARCH/REPLACE blocks for them.

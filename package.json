@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "ajv": "^8.17.1"
+  },
+  "dependencies": {
+    "@inertiajs/vue3": "^2.2.15",
+    "ajv-formats": "^3.0.1"
+  }
+}
